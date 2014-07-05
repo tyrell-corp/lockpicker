@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 await() {
-    until "$1" devices | grep -Eqx "$serial	(device|recovery|fastboot)"; do sleep 1; done
+    until "$1" devices | grep -Fqx "$serial	$2"; do sleep 1; done
 }
 
 adb_hell() {
@@ -26,7 +26,7 @@ fi
 recovery=$2
 
 echo Waiting for adb access to device "$serial"...
-await adb
+await adb device
 
 echo
 echo Getting device model...
@@ -79,7 +79,7 @@ adb -s "$serial" reboot-bootloader
 
 echo
 echo Waiting for bootloader fastboot...
-await fastboot
+await fastboot fastboot
 
 echo
 echo Sending recovery "$recovery"...
@@ -87,7 +87,7 @@ fastboot -s "$serial" boot "$recovery"
 
 echo
 echo Waiting for recovery adb...
-await adb
+await adb recovery
 
 echo
 echo Locking bootloader...
