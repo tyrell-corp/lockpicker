@@ -4,8 +4,16 @@ await() {
     until "$1" devices | grep -Eqx "$serial	(device|recovery|fastboot)"; do sleep 1; done
 }
 
+adb_hell() {
+    # https://code.google.com/p/android/issues/detail?id=3254
+
+    out=$(adb -s "$serial" shell "$1; echo \$?" | tr -d '\015')
+    printf %s "$out" | sed \$d
+    return "${out##*[!0-9]}"
+}
+
 setbootloader() {
-    adb -s "$serial" shell \
+    adb_hell \
     "test -e $part && busybox printf '\\x$1' | ${2+su -c \"} busybox dd bs=1 count=1 seek=$pos of=$part ${2+\"}"
 }
 
@@ -22,7 +30,7 @@ await adb
 
 echo
 echo Getting device model...
-device=$(adb -s "$serial" shell 'getprop ro.product.device' | tr -d '\015')
+device=$(adb_hell 'getprop ro.product.device')
 case "$device" in
     # From https://code.google.com/p/boot-unlocker-gnex
 
