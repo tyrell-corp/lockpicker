@@ -1,10 +1,23 @@
+transient-recovery
+
 Unlocks your Android bootloader (without wiping user data),
 boots into a transient custom/open/insecure recovery,
-and relocks the bootloader.
+and relocks the bootloader from inside that recovery.
 
 You need adb root access and fastboot access from the host running this
 script to the device (Nexus 4, 5, 7 (2013), 10, or Galaxy Nexus).
 
+
+What's the point?
+
+You've installed a custom Android ROM and encrypted your device, but now
+the unlocked bootloader and open recovery can be used by physical attackers
+to _quickly_ infect your system with malware or copy your encrypted data.
+
+To mitigate the threat, you flash stock recovery from a factory image at
+https://developers.google.com/android/nexus/images and then relock the
+bootloader. But you'll still want to boot a custom recovery when it's time
+to upgrade your ROM or to make a backup:
 
 
 $ time ./transient-recovery.sh xxxxxxxx openrecovery-twrp-2.7.1.1-flo.img
