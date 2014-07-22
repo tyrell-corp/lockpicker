@@ -20,6 +20,9 @@ bootloader. But you'll still want to boot a custom recovery when it's time
 to upgrade your ROM or to make a backup:
 
 
+$ ./transient-recovery.sh
+Usage: ./transient-recovery.sh device-serial-number path/to/custom/recovery.img
+
 $ time ./transient-recovery.sh xxxxxxxx openrecovery-twrp-2.7.1.1-flo.img
 Waiting for adb access to device xxxxxxxx...
 
