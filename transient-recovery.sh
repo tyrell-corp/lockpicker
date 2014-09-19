@@ -22,8 +22,8 @@ if test $# != 2; then
     echo Usage: "$0" device-serial-number path/to/custom/recovery.img
     exit 1
 fi
-  serial=$1
-recovery=$2
+  serial=${1:?}
+recovery=${2:?}
 
 echo Waiting for adb access to device "$serial"...
 await adb device
