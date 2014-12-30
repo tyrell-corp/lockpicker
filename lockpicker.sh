@@ -18,7 +18,10 @@ setbootloader() {
 }
 
 usage() {
-    echo "Usage: $0 -s serial-number [-b new-bootloader.img] [-r transient-recovery.img [sideload.zip...]]"
+    echo "Usage: lockpicker.sh  -s serial-number"
+    echo "                     [-B new-bootloader.img]"
+    echo "                     [-R new-recovery.img]"
+    echo "                     [-r transient-recovery.img [sideload.zip...]]"
     exit 1
 }
 
@@ -27,17 +30,18 @@ log() {
 }
 
 
-unset serial bootloader recovery
-while getopts s:b:r: opt; do
+unset serial new_bootloader new_recovery transient_recovery
+while getopts s:B:R:r: opt; do
     case "$opt" in
-        s)     serial=$OPTARG ;;
-        b) bootloader=$OPTARG ;;
-        r)   recovery=$OPTARG ;;
+        s)             serial=$OPTARG ;;
+        B)     new_bootloader=$OPTARG ;;
+        R)       new_recovery=$OPTARG ;;
+        r) transient_recovery=$OPTARG ;;
         *) usage ;;
     esac
 done
 shift $((OPTIND - 1))
-if test -z "$serial" -o -z "$recovery" -a $# != 0; then
+if test -z "$serial" -o -z "$transient_recovery" -a $# != 0; then
     usage
 fi
 
@@ -87,53 +91,58 @@ log "Supported model: $model"
 log "Unlocking bootloader..."
 setbootloader "$unlocked" su
 
-if test -n "$bootloader" -o -n "$recovery"; then
+if test -n "$new_bootloader" -o -n "$new_recovery" -o -n "$transient_recovery"; then
     log "Starting bootloader..."
     adb -s "$serial" reboot-bootloader
 
     log "Waiting for bootloader fastboot..."
     await fastboot fastboot
+fi
 
-    if test -n "$bootloader"; then
-        log "Flashing bootloader $bootloader..."
-        fastboot -s "$serial" flash bootloader "$bootloader"
+if test -n "$new_bootloader"; then
+    log "Flashing bootloader $new_bootloader..."
+    fastboot -s "$serial" flash bootloader "$new_bootloader"
 
-        log "Restarting bootloader..."
-        fastboot -s "$serial" reboot-bootloader
+    log "Restarting bootloader..."
+    fastboot -s "$serial" reboot-bootloader
 
-        log "Waiting for bootloader fastboot..."
-        await fastboot fastboot
+    log "Waiting for bootloader fastboot..."
+    await fastboot fastboot
+fi
 
-        if test -z "$recovery"; then
-            log "Locking bootloader..."
-            fastboot -s "$serial" oem lock
+if test -n "$new_recovery"; then
+    log "Flashing recovery $new_recovery..."
+    fastboot -s "$serial" flash recovery "$new_recovery"
+fi
 
-            log "Rebooting device..."
-            fastboot -s "$serial" reboot
-        fi
-    fi
+if test \( -n "$new_bootloader" -o -n "$new_recovery" \) -a -z "$transient_recovery"; then
+    log "Locking bootloader..."
+    fastboot -s "$serial" oem lock
 
-    if test -n "$recovery"; then
-        log "Sending transient recovery $recovery..."
-        fastboot -s "$serial" boot "$recovery"
+    log "Rebooting device..."
+    fastboot -s "$serial" reboot
+fi
+
+if test -n "$transient_recovery"; then
+    log "Sending transient recovery $transient_recovery..."
+    fastboot -s "$serial" boot "$transient_recovery"
+
+    log "Waiting for recovery adb..."
+    await adb recovery
+
+    log "Locking bootloader..."
+    setbootloader "$locked"
+
+    for sideload; do
+        log "Waiting for you to select sideload installation on the device..."
+        await adb sideload
+
+        log "Sending sideload package $sideload..."
+        adb -s "$serial" sideload "$sideload"
 
         log "Waiting for recovery adb..."
         await adb recovery
-
-        log "Locking bootloader..."
-        setbootloader "$locked"
-
-        for sideload; do
-            log "Waiting for you to select sideload installation on the device..."
-            await adb sideload
-
-            log "Sending sideload package $sideload..."
-            adb -s "$serial" sideload "$sideload"
-
-            log "Waiting for recovery adb..."
-            await adb recovery
-        done
-    fi
+    done
 fi
 
 log "Done."

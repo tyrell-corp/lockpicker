@@ -4,7 +4,7 @@ Unlocks your Android bootloader (without wiping user data),
 then boots into a transient custom/open/insecure recovery,  
 then relocks the bootloader from inside that recovery.
 
-Can also flash a new bootloader version,  
+Can also flash a new bootloader or stock recovery version,  
 or help you install a ROM via the transient recovery,  
 or merely unlock the bootloader.
 
@@ -26,7 +26,10 @@ bootloader. But you'll still want to boot a custom recovery when it's time
 to upgrade your ROM or to make a backup:
 
     $ ./lockpicker.sh
-    Usage: ./lockpicker.sh -s serial-number [-b new-bootloader.img] [-r transient-recovery.img [sideload.zip...]]
+    Usage: lockpicker.sh  -s serial-number
+                         [-B new-bootloader.img]
+                         [-R new-recovery.img]
+                         [-r transient-recovery.img [sideload.zip...]]
 
     $ time ./lockpicker.sh -s xxxxxxxx -r openrecovery-twrp-2.7.1.1-flo.img
     -> Waiting for adb access to device xxxxxxxx...
@@ -50,7 +53,7 @@ to upgrade your ROM or to make a backup:
     1+0 records out
     1 bytes (1B) copied, 0.005493 seconds, 182B/s
     -> Done.
-
+    
     real    0m14.076s
     user    0m0.031s
     sys     0m0.068s
