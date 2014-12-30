@@ -1,7 +1,9 @@
 # lockpicker
 
+for Nexus 4, 5, 7 (2013), 10, and Galaxy Nexus
+
 Unlocks your Android bootloader (without wiping user data),  
-then boots into a transient custom/open/insecure recovery,  
+then boots into a _transient_ custom/open/insecure recovery,  
 then relocks the bootloader from inside that recovery.
 
 Can also flash a new bootloader or stock recovery version,  
@@ -11,7 +13,6 @@ or merely unlock the bootloader.
 You need adb root access and fastboot access from the host running this
 script to the device.
 
-(Nexus 4, 5, 7 (2013), 10, or Galaxy Nexus)
 
 
 ## What's the point?
