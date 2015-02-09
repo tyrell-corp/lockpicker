@@ -1,6 +1,6 @@
 # lockpicker
 
-for Nexus 4, 5, 7 (2013), 10, and Galaxy Nexus
+for Nexus 4, 5, 7 (2013), 10, Galaxy Nexus, and OnePlus One
 
 Unlocks your Android bootloader (without wiping user data),  
 then boots into a _transient_ custom/open/insecure recovery,  
@@ -22,7 +22,7 @@ the unlocked bootloader and open recovery can be used by physical attackers
 to _quickly_ infect your system with malware or copy your encrypted data.
 
 To mitigate the threat, you flash stock recovery from a factory image at
-https://developers.google.com/android/nexus/images and then relock the
+e.g. https://developers.google.com/android/nexus/images and then relock the
 bootloader. But you'll still want to boot a custom recovery when it's time
 to upgrade your ROM or to make a backup:
 

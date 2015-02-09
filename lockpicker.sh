@@ -87,6 +87,13 @@ case "$model" in
         unlocked=01
     ;;
 
+    bacon|A0001) # OnePlus One
+            part=/dev/block/platform/msm_sdcc.1/by-name/aboot
+             pos=1048080
+          locked=00
+        unlocked=01
+    ;;
+
     *)
         log "Unsupported model: $model"
         exit 1
