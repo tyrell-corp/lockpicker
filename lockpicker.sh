@@ -17,6 +17,12 @@ setbootloader() {
     "test -e $part && busybox printf '\\x$1' | ${2+su -c \"} busybox dd bs=1 count=1 seek=$pos of=$part ${2+\"}"
 }
 
+warnweak() {
+    case "$part" in */omap/*)
+        log "WARNING: bootloader lock can be cracked with OMAPFlash, see http://forum.xda-developers.com/galaxy-nexus/general/unlock-bootloader-gt-i9250-wipe-root-t2016628"
+    esac
+}
+
 usage() {
     echo "Usage: lockpicker.sh  -s serial-number"
     echo "                     [-B new-bootloader.img]"
@@ -118,6 +124,7 @@ fi
 if test \( -n "$new_bootloader" -o -n "$new_recovery" \) -a -z "$transient_recovery"; then
     log "Locking bootloader..."
     fastboot -s "$serial" oem lock
+    warnweak
 
     log "Rebooting device..."
     fastboot -s "$serial" reboot
@@ -132,6 +139,7 @@ if test -n "$transient_recovery"; then
 
     log "Locking bootloader..."
     setbootloader "$locked"
+    warnweak
 
     for sideload; do
         log "Waiting for you to select sideload installation on the device..."
