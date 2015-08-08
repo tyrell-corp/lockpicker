@@ -101,6 +101,9 @@ case "$model" in
 esac
 log "Supported model: $model"
 
+log "Trying to temporarily disable SELinux enforcement..."
+adb_hell "su -c 'type setenforce > /dev/null && setenforce 0 || true'"
+
 log "Unlocking bootloader..."
 setbootloader "$unlocked" su
 
